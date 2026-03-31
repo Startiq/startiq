@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startiq — The Plug & Play System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --off-black: #111111;
+    --dark: #1a1a1a;
+    --mid: #2a2a2a;
+    --border: #2f2f2f;
+    --sand: #c8b89a;
+    --sand-light: #e8ddd0;
+    --white: #f5f2ee;
+    --muted: #888;
+    --accent: #d4a853;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--sand);
+  }
+
+  .nav-cta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--sand);
+    padding: 10px 24px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,184,154,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sand);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--sand);
+  }
+
+  .hero-sub {
+    margin-top: 40px;
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero-sub strong {
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  .hero-actions {
+    margin-top: 52px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--sand);
+    padding: 18px 40px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 100%; height: 100%;
+    border: 1px solid var(--sand);
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--accent); transform: translate(-2px, -2px); }
+  .btn-primary:hover::after { bottom: -6px; right: -6px; }
+
+  .hero-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px; left: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1.2s;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--border);
+  }
+
+  /* SECTIONS */
+  section { padding: 120px 40px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--sand);
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* PROBLEM */
+  .problem {
+    background: var(--off-black);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  .problem h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 58px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .problem h2 em { font-style: italic; color: var(--sand); }
+
+  .problem-points {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 8px;
+  }
+
+  .problem-point {
+    border-left: 2px solid var(--border);
+    padding-left: 24px;
+  }
+
+  .problem-point.active { border-color: var(--sand); }
+
+  .problem-point p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .problem-point.active p { color: var(--white); }
+
+  .problem-point strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .problem-closer {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3vw, 36px);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .problem-closer span { color: var(--white); }
+
+  /* SOLUTION */
+  .solution-inner {
+    max-width: 1100px;
+  }
+
+  .solution h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 58px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 700px;
+    margin-bottom: 40px;
+  }
+
+  .solution-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 60px;
+  }
+
+  .solution-text p {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .solution-text p strong { color: var(--white); font-weight: 400; }
+
+  /* SYSTEM */
+  .system {
+    background: var(--off-black);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .system-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+    max-width: 1100px;
+  }
+
+  .system-item {
+    background: var(--dark);
+    padding: 40px 36px;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .system-item:hover { background: var(--mid); }
+
+  .system-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--sand);
+    margin-bottom: 20px;
+  }
+
+  .system-item h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .system-item p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* TRACKS */
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 60px;
+    max-width: 1100px;
+  }
+
+  .track {
+    border: 1px solid var(--border);
+    padding: 40px 32px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .track:hover { border-color: var(--sand); }
+
+  .track-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .track h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .track p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .track-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .track-items li {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .track-items li::before {
+    content: '→';
+    color: var(--sand);
+    flex-shrink: 0;
+  }
+
+  /* AFFILIATE */
+  .affiliate {
+    background: var(--off-black);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .affiliate-intro {
+    max-width: 600px;
+    margin-bottom: 60px;
+  }
+
+  .affiliate-intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .affiliate-intro p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .affiliate-intro p strong { color: var(--white); font-weight: 400; }
+
+  .affiliate-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1100px;
+  }
+
+  .aff-card {
+    border: 1px solid var(--border);
+    padding: 40px 36px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .aff-card:hover { border-color: var(--sand); }
+
+  .aff-card.high { border-color: rgba(200,184,154,0.3); }
+
+  .aff-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--sand);
+    padding: 4px 12px;
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+
+  .aff-tag.low {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .aff-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .aff-card .commission {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--sand);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .aff-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ABOUT */
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+    max-width: 1100px;
+  }
+
+  .about h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 32px;
+  }
+
+  .about h2 em { font-style: italic; color: var(--sand); }
+
+  .about p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .about p strong { color: var(--white); font-weight: 400; }
+
+  .about-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 8px;
+  }
+
+  .about-stat {
+    background: var(--dark);
+    padding: 28px 24px;
+  }
+
+  .about-stat .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--sand);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .about-stat .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 140px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(200,184,154,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+  }
+
+  .cta-section h2 em { font-style: italic; color: var(--sand); }
+
+  .cta-section p {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 440px;
+    margin: 0 auto 52px;
+    line-height: 1.7;
+  }
+
+  .cta-price {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-top: 20px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--sand);
+  }
+
+  .footer-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--border);
+    text-transform: uppercase;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 auto 60px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    section { padding: 80px 20px; }
+    .hero { padding: 120px 20px 60px; }
+    .problem-grid, .solution-body, .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    .system-grid, .tracks-grid, .affiliate-grid { grid-template-columns: 1fr; }
+    .about-stat-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .hero-scroll { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Startiq</div>
+  <a href="#get-started" class="nav-cta">Get The Plug & Play System — $29</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">The Plug & Play System by Startiq</div>
+  <h1>Stop waiting.<br><em>Start building.</em></h1>
+  <p class="hero-sub">
+    I've spent <strong>15 years</strong> figuring out what works online. 
+    This is the shortcut I wish I had on day one.
+  </p>
+  <div class="hero-actions">
+    <a href="#get-started" class="btn-primary">Get The Plug & Play System — $29</a>
+    <span class="hero-note">No fluff. No filler. Just the system.</span>
+  </div>
+  <div class="hero-scroll">Scroll to explore</div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="section-label">The Problem</div>
+  <div class="problem-grid fade-in">
+    <h2>You don't have a business yet.<br><em>Here's why.</em></h2>
+    <div class="problem-points">
+      <div class="problem-point active">
+        <strong>No direction</strong>
+        <p>You don't know what to sell — so you sell nothing.</p>
+      </div>
+      <div class="problem-point active">
+        <strong>No system</strong>
+        <p>You've watched the videos, saved the reels, read the posts. You're still in the same place.</p>
+      </div>
+      <div class="problem-point active">
+        <strong>No execution</strong>
+        <p>Information without structure is just noise. You need a system, not more content.</p>
+      </div>
+    </div>
+    <p class="problem-closer">
+      That's not a motivation problem. <span>That's a system problem.</span>
+    </p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution">
+  <div class="section-label">The Solution</div>
+  <div class="solution-inner fade-in">
+    <h2>This is the system<br>you've been<br><em>looking for.</em></h2>
+    <div class="solution-body">
+      <div class="solution-text">
+        <p>Not another course with 40 hours of video you'll never finish. <strong>The Plug & Play System — ready to use within the hour.</strong></p>
+        <p>I've done sales. Built companies. Worked marketing from both sides. Done the full loop — multiple times over 15 years.</p>
+        <p>I built Startiq because I got tired of watching people spin their wheels on information that sounds good but <strong>gets you nowhere.</strong></p>
+        <p>This is exactly what I would hand someone on day one and say: <em style="color: var(--sand)">start here.</em></p>
+      </div>
+      <div class="solution-text">
+        <p style="font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; color: var(--white); line-height: 1.5; margin-bottom: 32px;">"Simple. Clear. Built to actually get you moving."</p>
+        <p>Whether you want to sell <strong>digital products</strong>, build an <strong>e-commerce store</strong>, or grow an <strong>affiliate income</strong> — the system covers all three tracks. You pick your path. We handle the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEM CONTENTS -->
+<section class="system">
+  <div class="section-label">Inside the System</div>
+  <div class="system-grid fade-in">
+    <div class="system-item">
+      <div class="system-num">01</div>
+      <h3>The Playbook</h3>
+      <p>Three tracks. One document. Digital products, dropshipping, or affiliate. Decided — not debated. Follow the steps.</p>
+    </div>
+    <div class="system-item">
+      <div class="system-num">02</div>
+      <h3>Built-in CRM</h3>
+      <p>Track every lead, deal, and follow-up directly in Notion. No extra tools. No monthly fees. Just clarity.</p>
+    </div>
+    <div class="system-item">
+      <div class="system-num">03</div>
+      <h3>30-Day Content Plan</h3>
+      <p>What to post, when to post, why it converts. 30 days planned. No more blank screens.</p>
+    </div>
+    <div class="system-item">
+      <div class="system-num">04</div>
+      <h3>DM Scripts (ManyChat-ready)</h3>
+      <p>Word for word. First contact to closed deal. Built for ManyChat so the automation runs itself.</p>
+    </div>
+    <div class="system-item">
+      <div class="system-num">05</div>
+      <h3>Funnel Template</h3>
+      <p>Your sales funnel, pre-built. Landing page → lead → purchase. Plug in, turn on.</p>
+    </div>
+    <div class="system-item">
+      <div class="system-num">06</div>
+      <h3>Day 1–30 Checklist</h3>
+      <p>No more "what do I do today?" Every single day is defined. Execute. That's it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THREE TRACKS -->
+<section>
+  <div class="section-label">Choose Your Track</div>
+  <div class="tracks-grid fade-in">
+    <div class="track">
+      <div class="track-icon">📦</div>
+      <h3>Digital Products</h3>
+      <p>Create once, sell forever. The highest margin business model online.</p>
+      <ul class="track-items">
+        <li>What to create and how to price it</li>
+        <li>Where and how to sell it</li>
+        <li>Automating your delivery</li>
+        <li>Scaling without more hours</li>
+      </ul>
+    </div>
+    <div class="track">
+      <div class="track-icon">🏪</div>
+      <h3>Dropshipping</h3>
+      <p>Sell products without inventory. Build a store that runs while you sleep.</p>
+      <ul class="track-items">
+        <li>Product research that actually works</li>
+        <li>Store setup from scratch</li>
+        <li>Supplier and fulfillment flow</li>
+        <li>Paid and organic traffic basics</li>
+      </ul>
+    </div>
+    <div class="track">
+      <div class="track-icon">🔗</div>
+      <h3>Affiliate Marketing</h3>
+      <p>Recommend tools you believe in. Earn recurring commission every month.</p>
+      <ul class="track-items">
+        <li>Which programs are worth your time</li>
+        <li>How to build trust before the link</li>
+        <li>Content that converts passively</li>
+        <li>Stacking income streams</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- AFFILIATE TOOLS -->
+<section class="affiliate">
+  <div class="section-label">Tools I Actually Use</div>
+  <div class="affiliate-intro fade-in">
+    <h2>The stack that<br><em>runs the business.</em></h2>
+    <p>These aren't sponsored recommendations. They're the tools I've used across <strong>15 years of building online</strong>. Inside the system, they show up as the natural next step — because they are.</p>
+  </div>
+  <div class="affiliate-grid fade-in">
+    <div class="aff-card high">
+      <div class="aff-tag">High Value</div>
+      <h3>Shopify</h3>
+      <div class="commission">Up to $150 per referral</div>
+      <p>"The only e-commerce platform worth recommending. I've seen it scale from side hustle to 8 figures. If you're building a store — this is it."</p>
+    </div>
+    <div class="aff-card high">
+      <div class="aff-tag">High Value</div>
+      <h3>HubSpot</h3>
+      <div class="commission">30% recurring — up to 1 year</div>
+      <p>"Every serious business needs a CRM. HubSpot is what the pros use. Set it up once, use it for everything."</p>
+    </div>
+    <div class="aff-card">
+      <div class="aff-tag low">Essential Tool</div>
+      <h3>Canva Pro</h3>
+      <div class="commission">$36 per new Pro user</div>
+      <p>"You need to look professional from day one. Canva makes that happen in an hour — no designer needed."</p>
+    </div>
+    <div class="aff-card">
+      <div class="aff-tag low">Essential Tool</div>
+      <h3>Stan.store</h3>
+      <div class="commission">20% recurring commission</div>
+      <p>"This is where you sell your digital products. Simple, built for creators who want to get paid — not mess around with tech."</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="section-label">About Startiq</div>
+  <div class="about-inner fade-in">
+    <div>
+      <h2>I'm not here to<br><em>inspire you.</em></h2>
+      <p>Most people selling "business systems" online have been doing it for 18 months. They learned it last year and turned it into a product.</p>
+      <p>I'm Alexandra. I've spent <strong>15 years building online</strong> — across sales, marketing, e-commerce and building actual companies from scratch. I ran a product business. The pandemic shut it down. I rebuilt from zero.</p>
+      <p>I built Startiq because I kept seeing the same thing: smart people, zero traction, no system. So I built the one I wish had existed on day one.</p>
+      <p><strong>It works because it's built from experience. Not theory.</strong></p>
+    </div>
+    <div class="about-stat-grid">
+      <div class="about-stat">
+        <div class="num">15+</div>
+        <div class="label">Years building online</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">3</div>
+        <div class="label">Business tracks covered</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">$29</div>
+        <div class="label">Full system access</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">0</div>
+        <div class="label">Fluff. Zero.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="get-started">
+  <h2>Stop waiting.<br><em>Start now.</em></h2>
+  <p>The system is ready. The only question is whether you are.</p>
+  <a href="#" class="btn-primary">Get The Plug & Play System — $29</a>
+  <div class="cta-price">Instant access. No subscriptions. Yours to keep.</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Startiq</div>
+  <div class="footer-tagline">Built for simplicity. Designed for results. Ready when you are.</div>
+</footer>
+
+<script>
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
