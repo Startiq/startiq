@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startiq — The System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --dark: #111;
+    --card: #161616;
+    --border: #252525;
+    --sand: #c8b89a;
+    --accent: #d4a853;
+    --white: #f5f2ee;
+    --muted: #666;
+    --green: #3d6b4f;
+  }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--dark);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    color: var(--sand);
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-section { padding: 0 12px; margin-bottom: 28px; }
+
+  .sidebar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .nav-item.active { background: rgba(200,184,154,0.1); color: var(--white); }
+  .nav-item .icon { font-size: 15px; width: 22px; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    background: var(--sand);
+    color: var(--black);
+  }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex: 1; padding: 56px 60px; max-width: 860px; }
+
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+
+  .page-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--sand);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+
+  .page-header h1 em { font-style: italic; color: var(--sand); }
+  .page-header p { font-size: 15px; color: var(--muted); max-width: 520px; line-height: 1.7; }
+
+  /* STEPS — BIG */
+  .big-steps { display: flex; flex-direction: column; gap: 3px; margin: 32px 0; }
+
+  .big-step {
+    display: flex;
+    align-items: stretch;
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.15s;
+    cursor: default;
+  }
+
+  .big-step:hover { border-color: rgba(200,184,154,0.3); }
+
+  .big-step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--border);
+    padding: 24px 28px;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    line-height: 1;
+  }
+
+  .big-step-content { padding: 24px 28px; flex: 1; }
+
+  .big-step-content h3 {
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--white);
+  }
+
+  .big-step-content p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .big-step-action {
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .chip:hover, .chip.done { border-color: var(--sand); color: var(--sand); }
+  .chip.done { background: rgba(200,184,154,0.08); }
+
+  /* INFO CARD */
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+
+  .info-card h3 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .info-card p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .info-card p + p { margin-top: 10px; }
+
+  /* MESSAGE BUBBLE */
+  .msg {
+    background: rgba(200,184,154,0.06);
+    border-left: 2px solid var(--sand);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13px;
+    color: var(--white);
+    line-height: 1.7;
+  }
+
+  .msg-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--sand);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  /* FLOW */
+  .flow { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+
+  .flow-step { display: flex; }
+
+  .flow-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .f-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--sand);
+    margin-top: 8px;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .f-dot.t { background: var(--accent); width: 14px; height: 14px; }
+  .f-dot.a { background: var(--green); }
+  .f-dot.q { background: #2a6b8b; }
+
+  .f-line { width: 1px; flex: 1; background: var(--border); margin: 3px 0; min-height: 20px; }
+
+  .flow-body { padding: 0 0 28px 16px; flex: 1; }
+
+  .f-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .f-type.t { color: var(--accent); }
+  .f-type.a { color: #5aab74; }
+  .f-type.q { color: #4a9bc4; }
+  .f-type.end { color: var(--muted); }
+
+  .f-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+  }
+
+  .f-box h4 { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .f-box .note { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
+  .branches { display: flex; gap: 10px; margin-top: 12px; }
+  .branch { flex: 1; border: 1px solid var(--border); padding: 12px 14px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .branch strong { display: block; color: var(--white); font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; margin-bottom: 4px; }
+
+  /* PRICE TABLE */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin: 24px 0; }
+
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .price-card.rec { border-color: rgba(200,184,154,0.4); }
+
+  .price-type { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .price-num { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: var(--sand); line-height: 1; margin-bottom: 8px; }
+  .price-label { font-size: 12px; color: var(--muted); }
+  .price-note { font-size: 11px; color: var(--sand); margin-top: 10px; font-family: 'DM Mono', monospace; }
+
+  /* CRM */
+  .crm-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 20px 0; }
+  .crm-table th { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); background: var(--dark); }
+  .crm-table td { padding: 12px 14px; border-bottom: 1px solid rgba(37,37,37,0.6); color: var(--white); }
+  .crm-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+  }
+
+  .tag.new { background: rgba(42,107,139,0.3); color: #4a9bc4; }
+  .tag.hot { background: rgba(212,168,83,0.2); color: var(--accent); }
+  .tag.closed { background: rgba(61,107,79,0.3); color: #5aab74; }
+  .tag.cold { background: rgba(40,40,40,0.8); color: var(--muted); }
+
+  /* CHECKLIST */
+  .tasks { list-style: none; }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(37,37,37,0.6);
+  }
+
+  .task:last-child { border-bottom: none; }
+
+  .t-box {
+    width: 20px; height: 20px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: transparent;
+  }
+
+  .t-box:hover { border-color: var(--sand); }
+  .t-box.done { background: var(--sand); border-color: var(--sand); color: var(--black); }
+
+  .t-text strong { display: block; font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 3px; }
+  .t-text span { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* WELCOME EMAIL */
+  .email-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .email-header {
+    background: var(--dark);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .email-header span { color: var(--white); }
+
+  .email-body { padding: 28px 32px; font-size: 14px; line-height: 1.9; color: var(--white); }
+  .email-body p { margin-bottom: 16px; color: var(--muted); }
+  .email-body p strong { color: var(--white); font-weight: 400; }
+
+  /* SECTION HEADING */
+  .sh {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--sand);
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .sh::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* TOOL CARDS */
+  .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+    transition: border-color 0.15s;
+  }
+
+  .tool-card:hover { border-color: rgba(200,184,154,0.3); }
+  .tool-card.high { border-color: rgba(200,184,154,0.2); }
+
+  .tool-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--sand);
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+
+  .tool-tag.low { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .tool-card h4 { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .tool-card .comm { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--sand); margin-bottom: 10px; }
+  .tool-card p { font-size: 12px; color: var(--muted); line-height: 1.6; font-style: italic; }
+
+  .btn {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--sand);
+    padding: 12px 28px;
+    text-decoration: none;
+    margin-top: 16px;
+    transition: background 0.15s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn:hover { background: var(--accent); }
+
+  /* MOBILE NAV */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--dark);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    padding: 0;
+  }
+
+  .mobile-nav-toggle {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--dark);
+    border: none;
+    color: var(--sand);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-menu {
+    display: none;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--dark);
+    padding: 8px 0 20px;
+  }
+
+  .mobile-menu.open { display: block; }
+
+  .mobile-menu-section { padding: 12px 20px 4px; }
+
+  .mobile-menu-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mobile-nav-item:hover, .mobile-nav-item.active {
+    background: rgba(200,184,154,0.08);
+    color: var(--white);
+  }
+
+  .mobile-nav-item .icon { font-size: 16px; width: 24px; }
+
+  @media (max-width: 860px) {
+    .sidebar { display: none; }
+    .mobile-nav { display: block; }
+    .main { margin-left: 0; padding: 28px 20px 140px; }
+    .price-grid, .tool-grid { grid-template-columns: 1fr; }
+    .branches { flex-direction: column; }
+    .page-header h1 { font-size: 32px; }
+    .big-step { flex-wrap: wrap; }
+    .big-step-num { min-width: 60px; padding: 16px 20px; font-size: 36px; }
+    .big-step-content { padding: 16px 20px; }
+    .big-step-action { padding: 0 20px 16px; width: 100%; }
+    .about-stat-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">STARTIQ</div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Start here</div>
+    <div class="nav-item active" onclick="show('start', this)"><span class="icon">⚡</span> Start Here <span class="nav-badge">First</span></div>
+    <div class="nav-item" onclick="show('pick-track', this)"><span class="icon">🎯</span> Pick Your Track</div>
+    <div class="nav-item" onclick="show('price', this)"><span class="icon">💰</span> Set Your Price</div>
+    <div class="nav-item" onclick="show('welcome', this)"><span class="icon">📧</span> Welcome Email</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Setup guides</div>
+    <div class="nav-item" onclick="show('stanstore', this)"><span class="icon">🏪</span> Stan.store Setup</div>
+    <div class="nav-item" onclick="show('shopify', this)"><span class="icon">🛍️</span> Shopify Setup</div>
+    <div class="nav-item" onclick="show('content', this)"><span class="icon">📅</span> Content Plan</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">ManyChat</div>
+    <div class="nav-item" onclick="show('mc-setup', this)"><span class="icon">⚙️</span> Setup Guide</div>
+    <div class="nav-item" onclick="show('mc-comment', this)"><span class="icon">💬</span> Comment Flow</div>
+    <div class="nav-item" onclick="show('mc-dm', this)"><span class="icon">📩</span> DM & Close Flow</div>
+    <div class="nav-item" onclick="show('scripts', this)"><span class="icon">📝</span> DM Scripts</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Run the business</div>
+    <div class="nav-item" onclick="show('crm', this)"><span class="icon">👥</span> Lead Tracker</div>
+    <div class="nav-item" onclick="show('tools', this)"><span class="icon">🔗</span> Affiliate Tools</div>
+    <div class="nav-item" onclick="show('faq', this)"><span class="icon">❓</span> FAQ</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Upgrade</div>
+    <div class="nav-item" onclick="show('pro', this)" style="border: 1px solid rgba(200,184,154,0.3);"><span class="icon">⭐</span> Pro — $79 <span class="nav-badge">Upgrade</span></div>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <button class="mobile-nav-toggle" onclick="toggleMobileMenu()">
+    <span id="mobile-current">⚡ Start Here</span>
+    <span id="mobile-arrow">▲ Menu</span>
+  </button>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label">Start here</div>
+      <div class="mobile-nav-item active" onclick="show('start', this); setMobileLabel('⚡ Start Here')"><span class="icon">⚡</span> Start Here</div>
+      <div class="mobile-nav-item" onclick="show('pick-track', this); setMobileLabel('🎯 Pick Your Track')"><span class="icon">🎯</span> Pick Your Track</div>
+      <div class="mobile-nav-item" onclick="show('price', this); setMobileLabel('💰 Set Your Price')"><span class="icon">💰</span> Set Your Price</div>
+      <div class="mobile-nav-item" onclick="show('welcome', this); setMobileLabel('📧 Welcome Email')"><span class="icon">📧</span> Welcome Email</div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label">Setup guides</div>
+      <div class="mobile-nav-item" onclick="show('stanstore', this); setMobileLabel('🏪 Stan.store Setup')"><span class="icon">🏪</span> Stan.store Setup</div>
+      <div class="mobile-nav-item" onclick="show('shopify', this); setMobileLabel('🛍️ Shopify Setup')"><span class="icon">🛍️</span> Shopify Setup</div>
+      <div class="mobile-nav-item" onclick="show('content', this); setMobileLabel('📅 Content Plan')"><span class="icon">📅</span> Content Plan</div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label">ManyChat</div>
+      <div class="mobile-nav-item" onclick="show('mc-setup', this); setMobileLabel('⚙️ ManyChat Setup')"><span class="icon">⚙️</span> Setup Guide</div>
+      <div class="mobile-nav-item" onclick="show('mc-comment', this); setMobileLabel('💬 Comment Flow')"><span class="icon">💬</span> Comment Flow</div>
+      <div class="mobile-nav-item" onclick="show('mc-dm', this); setMobileLabel('📩 DM & Close Flow')"><span class="icon">📩</span> DM & Close Flow</div>
+      <div class="mobile-nav-item" onclick="show('scripts', this); setMobileLabel('📝 DM Scripts')"><span class="icon">📝</span> DM Scripts</div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label">Run the business</div>
+      <div class="mobile-nav-item" onclick="show('crm', this); setMobileLabel('👥 Lead Tracker')"><span class="icon">👥</span> Lead Tracker</div>
+      <div class="mobile-nav-item" onclick="show('tools', this); setMobileLabel('🔗 Affiliate Tools')"><span class="icon">🔗</span> Affiliate Tools</div>
+      <div class="mobile-nav-item" onclick="show('faq', this); setMobileLabel('❓ FAQ')"><span class="icon">❓</span> FAQ</div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label">Upgrade</div>
+      <div class="mobile-nav-item" onclick="show('pro', this); setMobileLabel('⭐ Pro — $79')" style="color:var(--sand)"><span class="icon">⭐</span> Pro — $79</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══ START HERE ═══ -->
+  <div class="page active" id="page-start">
+    <div class="page-header">
+      <div class="page-tag">You're in. Now do this.</div>
+      <h1>Start <em>Here.</em></h1>
+      <p>Five steps. That's it. Do these before anything else. Everything else is in the sidebar when you need it.</p>
+    </div>
+
+    <div class="big-steps">
+      <div class="big-step">
+        <div class="big-step-num">1</div>
+        <div class="big-step-content">
+          <h3>Pick one track</h3>
+          <p>Digital products, dropshipping, or affiliate. One only. Don't mix them yet. The system covers all three — pick the one that fits you today.</p>
+        </div>
+        <div class="big-step-action">
+          <div class="chip" onclick="markDone(this)">Mark done</div>
+        </div>
+      </div>
+
+      <div class="big-step">
+        <div class="big-step-num">2</div>
+        <div class="big-step-content">
+          <h3>Set your price</h3>
+          <p>Most people overthink this and never launch. Open the Price Guide, pick a number, move on. Done in 5 minutes.</p>
+        </div>
+        <div class="big-step-action">
+          <div class="chip" onclick="show('price'); markDone(this)">Open →</div>
+        </div>
+      </div>
+
+      <div class="big-step">
+        <div class="big-step-num">3</div>
+        <div class="big-step-content">
+          <h3>Set up ManyChat</h3>
+          <p>Connect your Instagram. Build the comment trigger. Takes 20 minutes. After this, every post you make can generate leads automatically.</p>
+        </div>
+        <div class="big-step-action">
+          <div class="chip" onclick="show('mc-setup'); markDone(this)">Open →</div>
+        </div>
+      </div>
+
+      <div class="big-step">
+        <div class="big-step-num">4</div>
+        <div class="big-step-content">
+          <h3>Post your first piece of content</h3>
+          <p>Your story. Why you built this. End the caption with: <em style="color:var(--sand)">"Comment SYSTEM below and I'll send it to you."</em> That's your first trigger.</p>
+        </div>
+        <div class="big-step-action">
+          <div class="chip" onclick="markDone(this)">Mark done</div>
+        </div>
+      </div>
+
+      <div class="big-step">
+        <div class="big-step-num">5</div>
+        <div class="big-step-content">
+          <h3>Send your welcome email</h3>
+          <p>Copy the template. Customize three lines. Send it to your first buyer. This is what separates professionals from people who just sold a PDF.</p>
+        </div>
+        <div class="big-step-action">
+          <div class="chip" onclick="show('welcome'); markDone(this)">Open →</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="border-color: rgba(200,184,154,0.2); margin-top: 8px;">
+      <p style="color:var(--white); font-style:italic; font-size:15px;">"The goal of day one is not to be perfect. The goal is to be live."</p>
+    </div>
+  </div>
+
+  <!-- ═══ PRICE GUIDE ═══ -->
+  <div class="page" id="page-price">
+    <div class="page-header">
+      <div class="page-tag">Step 2 — Pricing</div>
+      <h1>Set Your <em>Price.</em></h1>
+      <p>Most people underprice because they're scared. Here's the framework. Pick a number and go.</p>
+    </div>
+
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-type">Entry</div>
+        <div class="price-num">$9</div>
+        <div class="price-label">Low barrier. High volume needed.</div>
+        <div class="price-note">Only if you have a large audience</div>
+      </div>
+      <div class="price-card rec">
+        <div class="price-type">Sweet spot ✓</div>
+        <div class="price-num">$29</div>
+        <div class="price-label">Impulse buy. No justification needed.</div>
+        <div class="price-note">Recommended — start here</div>
+      </div>
+      <div class="price-card">
+        <div class="price-type">Premium</div>
+        <div class="price-num">$49</div>
+        <div class="price-label">Higher perceived value. Fewer buyers.</div>
+        <div class="price-note">Once you have social proof</div>
+      </div>
+    </div>
+
+    <div class="sh">The rule</div>
+    <div class="info-card">
+      <p><strong>$29 is not a cheap price. It's a smart price.</strong></p>
+      <p>At $29, people buy without asking their partner. They buy on impulse. They buy because the risk feels low. Once you have 20–30 testimonials, raise it to $49. Then $79. You never lower a price — you only prove why it should be higher.</p>
+      <p>For today: <strong style="color:var(--sand)">set it at $29, publish it, move on.</strong></p>
+    </div>
+
+    <div class="sh">What to charge for the tools (affiliate)</div>
+    <div class="info-card">
+      <p>You don't set the price for Shopify or HubSpot — they do. Your job is to send the right person to the right tool at the right moment. That's it. The commission comes automatically.</p>
+    </div>
+  </div>
+
+  <!-- ═══ WELCOME EMAIL ═══ -->
+  <div class="page" id="page-welcome">
+    <div class="page-header">
+      <div class="page-tag">After the sale</div>
+      <h1>Welcome <em>Email.</em></h1>
+      <p>Copy this. Change the three highlighted parts. Send it within 1 hour of every purchase. This is what builds trust that turns one-time buyers into repeat customers.</p>
+    </div>
+
+    <div class="email-box">
+      <div class="email-header">
+        <div>To: <span>{{customer email}}</span></div>
+        <div>Subject: <span>You're in. Here's what to do first.</span></div>
+      </div>
+      <div class="email-body">
+        <p>Hey <strong>{{first name}}</strong> —</p>
+        <p>You just made a smart decision. Not because I said so — because most people spend months spinning their wheels trying to figure this out on their own. You just skipped that part.</p>
+        <p><strong>Here's your access link:</strong><br>→ <span style="color:var(--sand)">[YOUR LINK HERE]</span></p>
+        <p><strong>Start on page one. Do step one. Don't skip ahead.</strong><br>The system is built in order for a reason. People who skip to "the good stuff" are the ones who come back three weeks later saying it didn't work.</p>
+        <p>If you get stuck on anything, reply to this email. I read every one.<br>
+        — <span style="color:var(--sand)">[YOUR NAME]</span></p>
+        <p style="font-size:12px; color:var(--muted); border-top: 1px solid var(--border); padding-top:16px; margin-top: 8px;">P.S. Inside the system you'll also find the tools I use every day — Shopify, HubSpot, Canva, Stan.store. All linked. All the ones I actually recommend.</p>
+      </div>
+    </div>
+
+    <div class="sh">What to change</div>
+    <div class="info-card">
+      <p><strong style="color:var(--sand)">1. {{first name}}</strong> — your email platform fills this in automatically</p>
+      <p><strong style="color:var(--sand)">2. [YOUR LINK HERE]</strong> — your Notion workspace link or Stan.store download link</p>
+      <p><strong style="color:var(--sand)">3. [YOUR NAME]</strong> — sign with your real name. Not "The Startiq Team."</p>
+    </div>
+  </div>
+
+  <!-- ═══ MANYCHAT SETUP ═══ -->
+  <div class="page" id="page-mc-setup">
+    <div class="page-header">
+      <div class="page-tag">ManyChat — Setup</div>
+      <h1>20 Minutes. <em>Then it runs itself.</em></h1>
+      <p>Follow this exactly. Don't improvise. Once it's live, every post you make can send leads directly to your DMs.</p>
+    </div>
+
+    <div class="sh">Step by step</div>
+    <ul class="tasks">
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>1. Create a ManyChat account</strong>
+          <span>Go to manychat.com → sign up free → connect your Facebook/Instagram account</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>2. Connect Instagram</strong>
+          <span>Settings → Channels → Instagram → Connect. Your Instagram must be a Business or Creator account.</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>3. Create a new Flow</strong>
+          <span>Automation → New Flow → name it "Comment Trigger – SYSTEM"</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>4. Set the trigger</strong>
+          <span>Trigger type: Instagram → Comment on a post → keyword: SYSTEM (all caps). Set to "any post" or select a specific post.</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>5. Add the DM action</strong>
+          <span>Action: Send DM → paste Message 1 from the Comment Flow page. Add your link.</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>6. Add 24h follow-up</strong>
+          <span>Add a delay (24 hours) → send Message 2. Condition: tag "purchased" is NOT set.</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>7. Test it</strong>
+          <span>Go to your Instagram post → comment "SYSTEM" from another account → confirm you receive the DM.</span>
+        </div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text">
+          <strong>8. Turn it on</strong>
+          <span>Activate the flow. Done. Now every post that ends with "comment SYSTEM below" is a live sales machine.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ═══ COMMENT FLOW ═══ -->
+  <div class="page" id="page-mc-comment">
+    <div class="page-header">
+      <div class="page-tag">ManyChat — Comment Flow</div>
+      <h1>Comment → <em>Auto DM.</em></h1>
+      <p>Someone comments "SYSTEM" on your post. This is exactly what fires. Copy these messages word for word into ManyChat.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot t"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type t">Trigger</div>
+          <div class="f-box">
+            <h4>Comment contains: SYSTEM</h4>
+            <div class="note">Any post where your caption ends with "comment SYSTEM below"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot a"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type a">Instant DM — fires immediately</div>
+          <div class="f-box">
+            <div class="msg-label">Message 1</div>
+            <div class="msg">
+              Hey {{first name}} 👋<br><br>
+              Here it is — the full Startiq system. Everything you need to start your online business. One place. No fluff.<br><br>
+              → [YOUR LINK]<br><br>
+              $29. Instant access. Questions? Just reply here.
+            </div>
+            <div class="note">Delay: 0s &nbsp;|&nbsp; Optional: auto-like their comment</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot q"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type q">Follow-up — 24h delay</div>
+          <div class="f-box">
+            <div class="msg-label">Message 2 — only if no purchase</div>
+            <div class="msg">
+              {{first name}} — checking in. Did you get a chance to look at it?<br><br>
+              If something's holding you back, just tell me. I'll give you a straight answer.
+            </div>
+            <div class="note">Condition: tag "purchased" NOT set &nbsp;|&nbsp; Delay: 24h</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot"></div></div>
+        <div class="flow-body">
+          <div class="f-type end">End — tag & route</div>
+          <div class="f-box">
+            <div class="note">
+              Replied → tag "engaged" → start DM & Close flow<br>
+              No reply after 48h → tag "cold" → stop sequence<br>
+              Purchased → tag "purchased" → remove from all sequences
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DM & CLOSE FLOW ═══ -->
+  <div class="page" id="page-mc-dm">
+    <div class="page-header">
+      <div class="page-tag">ManyChat — DM Flow</div>
+      <h1>Qualify. <em>Close.</em></h1>
+      <p>For leads that replied but didn't buy. Two questions. Then close. Don't over-complicate this.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot t"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type t">Trigger</div>
+          <div class="f-box"><h4>Tag "engaged" is set — or lead replies to any DM</h4></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot q"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type q">Question 1 — What do you want to build?</div>
+          <div class="f-box">
+            <div class="msg">Quick question — what's the main thing you want to build online?</div>
+            <div class="branches">
+              <div class="branch"><strong>A) Digital products</strong>Guides, templates, courses</div>
+              <div class="branch"><strong>B) Online store</strong>Dropshipping / e-commerce</div>
+              <div class="branch"><strong>C) Affiliate income</strong>Recommend tools, earn commission</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot q"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type q">Question 2 — Where are you now?</div>
+          <div class="f-box">
+            <div class="msg">Got it. And where are you right now — complete beginner, or tried something before?</div>
+            <div class="branches">
+              <div class="branch"><strong>A) Beginner</strong>Haven't started yet</div>
+              <div class="branch"><strong>B) Tried before</strong>Started but got stuck</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot a"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type a">Close — tailored by their answer</div>
+          <div class="f-box">
+            <div class="msg">
+              Then this is exactly what you need.<br><br>
+              The Startiq system covers [their answer] from zero — what to do on day one, how to set up your funnel, and how to start getting paid.<br><br>
+              $29. Yours forever. Most people are running within the first day because there's nothing left to figure out.<br><br>
+              → [YOUR LINK]<br><br>
+              Any reason you'd wait?
+            </div>
+            <div class="note">Replace [their answer] with what they picked in Q1. Last line is intentional — it forces a yes or a specific objection.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot q"></div><div class="f-line"></div></div>
+        <div class="flow-body">
+          <div class="f-type q">Objection handling</div>
+          <div class="f-box">
+            <div class="msg">Fair enough. What's the hesitation — is it the price, or you're not sure if it's the right fit?</div>
+            <div class="branches">
+              <div class="branch"><strong>Price</strong>"It's $29 once. Most people spend more than that trying to figure this out in week one."</div>
+              <div class="branch"><strong>Fit</strong>"Tell me what you want to build and I'll tell you straight if this covers it."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-spine"><div class="f-dot"></div></div>
+        <div class="flow-body">
+          <div class="f-type end">End</div>
+          <div class="f-box">
+            <div class="note">
+              Bought → tag "purchased" → send welcome DM → remove from sequences<br>
+              No reply 48h → tag "cold" → stop
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DM SCRIPTS ═══ -->
+  <div class="page" id="page-scripts">
+    <div class="page-header">
+      <div class="page-tag">DM Scripts</div>
+      <h1>Word for <em>Word.</em></h1>
+      <p>Copy these directly. Don't over-edit. They're written to sound like a person — not a funnel.</p>
+    </div>
+
+    <div class="sh">Cold outreach — followers who never engaged</div>
+    <div class="msg-label" style="margin-top:16px;">First message</div>
+    <div class="msg">Hey {{first name}} — noticed you've been following for a while. Are you trying to build something online, or still figuring out the direction?</div>
+
+    <div class="msg-label">If they respond</div>
+    <div class="msg">Got it. I built a system for exactly that — covers [their goal], step by step, with automation built in. $29, instant access. Want me to send the link?</div>
+
+    <div class="sh">Warm lead — came through comment trigger</div>
+    <div class="msg-label" style="margin-top:16px;">"Is this legit?"</div>
+    <div class="msg">100%. It's not a course — it's a working system. Notion workspace, DM scripts, content plan, CRM. You can use it today. I've been building online for 20 years. This is what I wish existed on day one.</div>
+
+    <div class="msg-label">"What's inside?"</div>
+    <div class="msg">Three tracks — digital products, dropshipping, affiliate. Pick one. Inside: what to sell, funnel setup, DM scripts that close, and a CRM to track everything. $29. One payment. Yours forever.</div>
+
+    <div class="sh">Closing</div>
+    <div class="msg-label" style="margin-top:16px;">They're on the fence</div>
+    <div class="msg">Here's the honest version: $29 is not the risk. Spending another six months watching videos and doing nothing — that's the risk. The system removes the guesswork. That's it.</div>
+
+    <div class="msg-label">After they buy — natural upsell to tools</div>
+    <div class="msg">You're in. Inside the system you'll see the tools I recommend — Shopify if you're building a store, HubSpot for your CRM, Canva for visuals, Stan.store if you want to sell digital products. All linked. All the ones I actually use.</div>
+  </div>
+
+  <!-- ═══ CRM ═══ -->
+  <div class="page" id="page-crm">
+    <div class="page-header">
+      <div class="page-tag">Lead Tracker</div>
+      <h1>Your <em>Pipeline.</em></h1>
+      <p>Every lead that comes in goes here. Update it every day. If it's not in here, it doesn't exist.</p>
+    </div>
+
+    <table class="crm-table">
+      <thead>
+        <tr>
+          <th>Handle</th>
+          <th>Source</th>
+          <th>Wants to build</th>
+          <th>Status</th>
+          <th>Last touch</th>
+          <th>Next action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>@example_1</td><td>Comment trigger</td><td>Digital products</td><td><span class="tag hot">Hot</span></td><td>Today</td><td>Send link again</td></tr>
+        <tr><td>@example_2</td><td>Cold DM</td><td>Affiliate</td><td><span class="tag new">New</span></td><td>Yesterday</td><td>Send Q1</td></tr>
+        <tr><td>@example_3</td><td>Comment trigger</td><td>Dropshipping</td><td><span class="tag closed">Closed ✓</span></td><td>2 days ago</td><td>Send welcome email</td></tr>
+        <tr><td>@example_4</td><td>DM reply</td><td>Digital products</td><td><span class="tag cold">Cold</span></td><td>5 days ago</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:8px;">Delete sample rows. Add real leads. Update daily.</p>
+  </div>
+
+  <!-- ═══ AFFILIATE TOOLS ═══ -->
+  <div class="page" id="page-tools">
+    <div class="page-header">
+      <div class="page-tag">Affiliate Tools</div>
+      <h1>Tools I <em>Actually Use.</em></h1>
+      <p>These are inside the system as natural next steps. Don't push them — just place them where they belong and let the commission come.</p>
+    </div>
+
+    <div class="tool-grid">
+      <div class="tool-card high">
+        <div class="tool-tag">High ticket</div>
+        <h4>Shopify</h4>
+        <div class="comm">Up to $150 per referral</div>
+        <p>"The only e-commerce platform worth recommending. I've seen it scale from side hustle to 8 figures."</p>
+        <a href="https://www.shopify.com/partners" target="_blank" class="btn">Apply →</a>
+      </div>
+      <div class="tool-card high">
+        <div class="tool-tag">High ticket</div>
+        <h4>HubSpot</h4>
+        <div class="comm">30% recurring — up to 1 year</div>
+        <p>"Every serious business needs a CRM. Set it up once, use it for everything."</p>
+        <a href="https://www.hubspot.com/partners/affiliates" target="_blank" class="btn">Apply →</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-tag low">Essential</div>
+        <h4>Canva Pro</h4>
+        <div class="comm">$36 per new Pro user</div>
+        <p>"Look professional from day one. Canva makes that happen in an hour."</p>
+        <a href="https://www.canva.com/affiliates/" target="_blank" class="btn">Apply →</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-tag low">Essential</div>
+        <h4>Stan.store</h4>
+        <div class="comm">20% recurring commission</div>
+        <p>"Where you sell digital products. Simple, built for creators who want to get paid."</p>
+        <a href="https://stan.store" target="_blank" class="btn">Apply →</a>
+      </div>
+    </div>
+
+    <div class="sh">The rule</div>
+    <div class="info-card">
+      <p><strong>Never push the tools. Place them.</strong></p>
+      <p>Inside the system, Shopify appears when someone picks the dropshipping track. HubSpot appears in the CRM section. Canva appears in the content plan. Stan.store appears in the digital products track. They're the natural next step — not an ad. That's why they convert.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PICK YOUR TRACK ═══ -->
+  <div class="page" id="page-pick-track">
+    <div class="page-header">
+      <div class="page-tag">Step 1 — Choose your path</div>
+      <h1>Pick Your <em>Track.</em></h1>
+      <p>One only. Don't mix them. Answer three questions and you'll know exactly which one fits you right now.</p>
+    </div>
+
+    <div class="sh">Three questions</div>
+    <div class="info-card" style="margin-bottom:12px;">
+      <h3 style="margin-bottom:16px; font-family:'Playfair Display',serif;">1. Do you want to create something or sell something that exists?</h3>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px; border:1px solid var(--border); padding:16px 20px;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--sand); margin-bottom:8px;">CREATE</div>
+          <p style="font-size:13px; color:var(--muted);">You have knowledge, skills or ideas you want to package and sell. → <strong style="color:var(--white)">Digital Products</strong></p>
+        </div>
+        <div style="flex:1; min-width:180px; border:1px solid var(--border); padding:16px 20px;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--sand); margin-bottom:8px;">SELL EXISTING</div>
+          <p style="font-size:13px; color:var(--muted);">You want to sell physical products without holding stock. → <strong style="color:var(--white)">Dropshipping</strong></p>
+        </div>
+        <div style="flex:1; min-width:180px; border:1px solid var(--border); padding:16px 20px;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--sand); margin-bottom:8px;">RECOMMEND</div>
+          <p style="font-size:13px; color:var(--muted);">You want to recommend tools and earn commission. → <strong style="color:var(--white)">Affiliate</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom:12px;">
+      <h3 style="margin-bottom:16px; font-family:'Playfair Display',serif;">2. How fast do you want your first sale?</h3>
+      <p style="font-size:13px; color:var(--muted); line-height:1.8;">
+        <strong style="color:var(--white)">Fastest → Affiliate.</strong> No product to build. Start posting today.<br>
+        <strong style="color:var(--white)">Medium → Digital Products.</strong> 1–3 days to create. Then it sells forever.<br>
+        <strong style="color:var(--white)">Slowest start, biggest scale → Dropshipping.</strong> Store takes a few days to set up. Bigger upside long term.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3 style="margin-bottom:16px; font-family:'Playfair Display',serif;">3. What do you have right now?</h3>
+      <p style="font-size:13px; color:var(--muted); line-height:1.8;">
+        <strong style="color:var(--white)">Knowledge or a skill</strong> → Digital Products<br>
+        <strong style="color:var(--white)">A product idea or niche</strong> → Dropshipping<br>
+        <strong style="color:var(--white)">An audience or content idea</strong> → Affiliate<br>
+        <strong style="color:var(--white)">Nothing yet</strong> → Start with Affiliate. Lowest barrier. Learn while earning.
+      </p>
+    </div>
+
+    <div class="sh">The honest answer</div>
+    <div class="info-card" style="border-color: rgba(200,184,154,0.2);">
+      <p style="font-size:15px; color:var(--white); font-style:italic; line-height:1.7;">"If you're completely new — start with Affiliate or Digital Products. Both require zero upfront cost. Pick one, commit for 30 days, then decide if you want to add the others."</p>
+    </div>
+  </div>
+
+  <!-- ═══ STAN.STORE SETUP ═══ -->
+  <div class="page" id="page-stanstore">
+    <div class="page-header">
+      <div class="page-tag">Setup Guide — Stan.store</div>
+      <h1>Live in <em>30 Minutes.</em></h1>
+      <p>This is where you sell The Plug & Play System. Free to start, no monthly fee, instant delivery. Follow this exactly.</p>
+    </div>
+
+    <div class="sh">Step by step</div>
+    <ul class="tasks">
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>1. Create your account</strong><span>Go to stan.store → Sign Up → connect your Instagram to import your profile automatically</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>2. Set up your page</strong><span>Add your profile photo, bio, and link. Keep the bio simple: "I help people start online businesses. Plug & Play System below."</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>3. Create your first product</strong><span>Add Product → Digital Download → Name: "The Plug & Play System by Startiq" → Price: $29</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>4. Upload the system file</strong><span>Upload startiq-system-v2.html as your digital download. This is what the customer receives automatically after payment.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>5. Write your product description</strong><span>Copy your landing page problem + solution text. Keep it short — 3–4 sentences max. The landing page does the selling, not Stan.store.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>6. Connect Stripe</strong><span>Settings → Payouts → Connect Stripe. This is how you get paid. Takes 5 minutes. Stan.store takes 5% per sale on the free plan.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>7. Create Pro product ($79)</strong><span>Add second product → "The Plug & Play System PRO" → $79 → same file + note that onboarding call is included. You'll book it manually via DM.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>8. Test it</strong><span>Buy your own product with a test card. Confirm you receive the download link. Confirm Stripe registers the payment.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>9. Copy your product link</strong><span>This is the link you put in ManyChat and in your landing page CTA buttons. Save it somewhere you can find it.</span></div>
+      </li>
+    </ul>
+
+    <div class="sh">What the customer sees after buying</div>
+    <div class="info-card">
+      <p>Stan.store automatically sends a download email with the file. You don't need to do anything. Your welcome email (see sidebar) goes on top of that — send it manually within 1 hour of every purchase until you have enough volume to automate it.</p>
+    </div>
+  </div>
+
+  <!-- ═══ SHOPIFY SETUP ═══ -->
+  <div class="page" id="page-shopify">
+    <div class="page-header">
+      <div class="page-tag">Setup Guide — Shopify (Dropshipping Track)</div>
+      <h1>Your Store. <em>Live Today.</em></h1>
+      <p>This guide is for the Dropshipping track. If you're on Digital Products or Affiliate, you don't need Shopify yet — but your customers do, which is why it's in the affiliate tools.</p>
+    </div>
+
+    <div class="sh">Before you build — find your product first</div>
+    <div class="info-card" style="border-color:rgba(200,184,154,0.2); margin-bottom:24px;">
+      <p><strong>Don't build the store until you know what you're selling.</strong> Most people set up a beautiful store and then try to find products. Wrong order. Product first. Store second.</p>
+      <p style="margin-top:12px;">Where to find products: TikTok Creative Center → Top Products. Look for items with lots of organic videos, high engagement, and no obvious big-brand competition.</p>
+    </div>
+
+    <div class="sh">Step by step</div>
+    <ul class="tasks">
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>1. Start your Shopify trial</strong><span>shopify.com → Start free trial → Use affiliate link from the Tools page to support Startiq</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>2. Pick a clean theme</strong><span>Themes → Free themes → Dawn or Refresh. Don't spend money on a paid theme yet. Clean and fast beats fancy.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>3. Add your product</strong><span>Products → Add product → Title, description (benefits not features), price, photos. Use supplier photos or create your own with Canva.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>4. Connect your supplier</strong><span>Install DSers (free) from the Shopify App Store → connect AliExpress → find your product → import to store. Orders fulfill automatically.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>5. Set your pricing</strong><span>Rule: price at 3x your product cost minimum. If product costs $8, sell at $24+. Always include shipping in your price — free shipping converts better.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>6. Set up payments</strong><span>Settings → Payments → Shopify Payments (or Stripe). Add PayPal as a second option — some customers only buy with PayPal.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>7. Add essential pages</strong><span>Create: Refund Policy, Privacy Policy, Shipping Policy. Shopify generates templates for all of these automatically in Settings → Policies.</span></div>
+      </li>
+      <li class="task">
+        <div class="t-box" onclick="tick(this)">✓</div>
+        <div class="t-text"><strong>8. Test order</strong><span>Place a test order. Confirm DSers picks it up. Confirm the customer confirmation email looks right. Then go live.</span></div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ═══ CONTENT PLAN ═══ -->
+  <div class="page" id="page-content">
+    <div class="page-header">
+      <div class="page-tag">Content Plan</div>
+      <h1>What to Post. <em>When. Why.</em></h1>
+      <p>Every post has one job: bring the right person to your ManyChat trigger. This is your first 4 weeks. After that, repeat what worked.</p>
+    </div>
+
+    <div class="sh">The only content formula you need</div>
+    <div class="info-card" style="margin-bottom:24px; border-color:rgba(200,184,154,0.2);">
+      <p style="font-size:15px; color:var(--white); line-height:1.8;"><strong>Hook</strong> → <span style="color:var(--sand)">stop the scroll in 2 seconds</span><br>
+      <strong>Value</strong> → <span style="color:var(--sand)">one useful thing they didn't know</span><br>
+      <strong>CTA</strong> → <span style="color:var(--sand)">"Comment SYSTEM below and I'll send it to you"</span></p>
+      <p style="font-size:13px; color:var(--muted); margin-top:14px;">Every single post ends with this CTA. Not sometimes. Every time.</p>
+    </div>
+
+    <div class="sh">Week 1 — Your story & authority</div>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:32px;">
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 1</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>Your story</strong></p>
+        <p style="font-size:13px; color:var(--muted);">Why you built this. The pandemic, the rebuild, the 15 years. Real. No filter. This is the post that builds trust.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 2</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>The #1 mistake beginners make</strong></p>
+        <p style="font-size:13px; color:var(--muted);">Trying to figure it out alone with no system. Tease the solution. End with CTA.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 3</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>3 ways to make money online (for real)</strong></p>
+        <p style="font-size:13px; color:var(--muted);">Digital products, dropshipping, affiliate. Short and clear. This primes the audience for your offer.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 4</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>Why most people stay stuck</strong></p>
+        <p style="font-size:13px; color:var(--muted);">Too much information, no system. Agitate the problem. Strong CTA.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 5</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>What a real funnel looks like</strong></p>
+        <p style="font-size:13px; color:var(--muted);">Content → DM → sale. Show the path. People buy when they understand the process.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--sand); margin-bottom:6px;">DAY 6</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>The tools I actually use</strong></p>
+        <p style="font-size:13px; color:var(--muted);">ManyChat, Stan.store, Canva, Shopify. Natural mention. Natural affiliate placement.</p>
+      </div>
+      <div class="info-card" style="padding:20px 24px; border-color:rgba(200,184,154,0.3);">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--accent); margin-bottom:6px;">DAY 7 — CTA POST</div>
+        <p style="font-size:14px; color:var(--white); margin-bottom:4px;"><strong>Hard sell post → Comment SYSTEM</strong></p>
+        <p style="font-size:13px; color:var(--muted);">"I built a complete online business system. $29. Comment SYSTEM below and I'll send it directly to your DMs."</p>
+      </div>
+    </div>
+
+    <div class="sh">Week 2–4 — Repeat this pattern</div>
+    <div class="info-card">
+      <p style="font-size:14px; color:var(--white); margin-bottom:16px;"><strong>Mon–Sat:</strong> Value post (educate, story, tip, tool, objection buster)</p>
+      <p style="font-size:14px; color:var(--white); margin-bottom:16px;"><strong>Sunday:</strong> CTA post → Comment SYSTEM</p>
+      <p style="font-size:13px; color:var(--muted);">After week 4: look at which posts got the most comments and saves. Make more of those. Drop the formats that got nothing. That's your entire content strategy.</p>
+    </div>
+
+    <div class="sh">Hook formulas that work</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="msg">"I lost my business in the pandemic. Here's what I rebuilt it with."</div>
+      <div class="msg">"Nobody tells beginners this about starting online."</div>
+      <div class="msg">"You don't have a motivation problem. You have a system problem."</div>
+      <div class="msg">"I made my first $29 online in 2024. Here's exactly how."</div>
+      <div class="msg">"Stop watching videos. Start doing this instead."</div>
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div class="page" id="page-faq">
+    <div class="page-header">
+      <div class="page-tag">FAQ</div>
+      <h1>Questions They <em>Will Ask.</em></h1>
+      <p>Answer these before they ask. Use these in DMs, on your Stan.store page, and in your content.</p>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"Is this a course?"</h3>
+        <p>No. It's a system. A course gives you information. This gives you the exact steps, templates, scripts and tools to execute from day one. You don't watch it — you use it.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"I'm a complete beginner. Is this for me?"</h3>
+        <p>Yes — that's exactly who it's built for. You don't need experience. You need a clear starting point and a system that tells you what to do next. That's this.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"How fast can I make money?"</h3>
+        <p>That depends entirely on how fast you execute. Some people make their first sale within a week. Most take 2–4 weeks. Nobody who follows the system is still at zero after 30 days — unless they didn't use it.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"Do I need to spend more money after this?"</h3>
+        <p>No upfront costs required. ManyChat is free up to 1000 contacts. Stan.store is free to start. Canva has a free plan. The only cost is time — and this system minimizes that too.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"What if it doesn't work for me?"</h3>
+        <p>The system works. What sometimes doesn't work is the execution. If you go through it and genuinely get stuck, reply to your welcome email and I'll help you figure out where the block is.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"Which track should I choose?"</h3>
+        <p>Open the "Pick Your Track" page in the sidebar. Three questions. Five minutes. Done.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"What's the difference between $29 and $79 Pro?"</h3>
+        <p>The $29 system is complete — everything you need to start. The $79 Pro adds a 30-minute onboarding call with Alexandra where you go through your specific situation and build a plan together. If you want to move faster and avoid guesswork, Pro is worth it.</p>
+      </div>
+      <div class="info-card">
+        <h3 style="margin-bottom:10px;">"Can I do this alongside a full-time job?"</h3>
+        <p>Yes. That's how most people start. The system is built to run in the margins — 30–60 minutes a day is enough to get started. ManyChat automates the DMs so you don't have to be online all day.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRO PAGE ═══ -->
+  <div class="page" id="page-pro">
+    <div class="page-header">
+      <div class="page-tag">Upgrade — Pro Plan</div>
+      <h1>The Plug & Play System <em>Pro.</em></h1>
+      <p>Everything in the $29 system — plus direct access to Alexandra for 30 minutes to build your personal plan.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:32px;">
+      <div class="info-card">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:16px; letter-spacing:0.2em;">INCLUDED — $29</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> The full Plug & Play System</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> ManyChat flows & DM scripts</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> Lead tracker CRM</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> Content plan</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> Stan.store & Shopify guides</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> Affiliate tools with direct links</li>
+          <li style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span style="color:var(--sand);">✓</span> FAQ</li>
+        </ul>
+      </div>
+      <div class="info-card" style="border-color:rgba(200,184,154,0.4);">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--accent); margin-bottom:16px; letter-spacing:0.2em;">PRO ONLY — $79</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <li style="font-size:13px; color:var(--white); display:flex; gap:10px;"><span style="color:var(--accent);">⭐</span> Everything in $29</li>
+          <li style="font-size:13px; color:var(--white); display:flex; gap:10px;"><span style="color:var(--accent);">⭐</span> 30-min onboarding call with Alexandra</li>
+          <li style="font-size:13px; color:var(--white); display:flex; gap:10px;"><span style="color:var(--accent);">⭐</span> Personal track recommendation</li>
+          <li style="font-size:13px; color:var(--white); display:flex; gap:10px;"><span style="color:var(--accent);">⭐</span> Custom 7-day action plan</li>
+          <li style="font-size:13px; color:var(--white); display:flex; gap:10px;"><span style="color:var(--accent);">⭐</span> Direct DM access for 7 days after call</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-card" style="border-color:rgba(200,184,154,0.3); margin-bottom:24px;">
+      <p style="font-size:15px; color:var(--white); font-style:italic; line-height:1.7;">"The $29 system tells you what to do. The Pro call makes sure you're doing the right things for your specific situation. That's the difference."<br><span style="font-size:13px; color:var(--sand); font-style:normal;">— Alexandra</span></p>
+    </div>
+
+    <div class="sh">How to upsell Pro in DM</div>
+    <div class="msg-label" style="margin-top:16px;">After they buy $29 — send this within 24h</div>
+    <div class="msg">Hey {{first name}} — you're in. Before you dive in, I want to make sure you start on the right track.<br><br>I do a 30-minute call with people who want to move faster — we go through your situation specifically and build a plan together. It's $79 total (so $50 more than what you already paid).<br><br>Worth it if you want to skip the trial and error. Want me to send you the link?</div>
+
+    <div class="sh">How to set this up on Stan.store</div>
+    <div class="info-card">
+      <p>Create a second product on Stan.store: "The Plug & Play System PRO — $79." Upload the same system file. In the product description, explain the onboarding call is included and they'll receive a booking link via email within 24 hours of purchase. Book calls manually via Calendly (free plan) until you have enough volume to automate it.</p>
+    </div>
+  </div>
+
+</div><!-- end main -->
+</div><!-- end layout -->
+
+<div style="position:fixed; bottom:0; left:240px; right:0; bottom:0; padding:8px 24px; background:var(--black); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; z-index:99;">
+  <span style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--muted);">© 2025 Startiq by Alexandra Boström-Larsson. All rights reserved.</span>
+  <span style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--border);">Unauthorized sharing or resale is prohibited.</span>
+</div>
+
+<script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const arrow = document.getElementById('mobile-arrow');
+    menu.classList.toggle('open');
+    arrow.textContent = menu.classList.contains('open') ? '▼ Close' : '▲ Menu';
+  }
+
+  function setMobileLabel(label) {
+    document.getElementById('mobile-current').textContent = label;
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('mobile-arrow').textContent = '▲ Menu';
+    document.querySelectorAll('.mobile-nav-item').forEach(n => n.classList.remove('active'));
+  }
+
+  function show(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const page = document.getElementById('page-' + id);
+    if (page) page.classList.add('active');
+    if (el) el.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function markDone(el) {
+    el.classList.toggle('done');
+    el.textContent = el.classList.contains('done') ? 'Done ✓' : 'Mark done';
+  }
+
+  function tick(el) {
+    el.classList.toggle('done');
+    el.textContent = el.classList.contains('done') ? '✓' : '✓';
+  }
+</script>
+</body>
+</html>
